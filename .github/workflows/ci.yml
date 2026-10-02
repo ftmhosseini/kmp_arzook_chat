@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # JWT_SECRET must be set as a GitHub Actions secret.
+      # Go to: GitHub repo → Settings → Secrets and variables → Actions → New repository secret
+      # Required secrets:
+      #   JWT_SECRET   (Base64-encoded, minimum 32 bytes — must match the main backend JWT secret)
+      - name: Run tests
+        run: ./gradlew test
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
+      - name: Build JAR
+        run: ./gradlew bootJar
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: arzook-websocket-server
+          path: build/libs/arzook-websocket-server-*.jar
+          if-no-files-found: error

@@ -1,0 +1,20 @@
+.gradle
+.idea
+.DS_Store
+build
+*.class
+*.jar
+*.war
+*.ear
+out/
+target/
+*.iml
+
+# Environment / secrets
+.env
+.env.local
+application-local.properties
+application-prod.properties
+
+# Gradle wrapper (keep gradlew but not the cache)
+!gradle/wrapper/gradle-wrapper.jar
